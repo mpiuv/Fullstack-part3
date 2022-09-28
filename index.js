@@ -54,6 +54,37 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(204).end()
 })
 
+app.use(express.json())
+
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+  if (!body.name) {
+    return response.status(400).json({ 
+      error: 'name missing' 
+    })
+  }
+
+  if (!body.number) {
+    return response.status(400).json({ 
+      error: 'number missing' 
+    })
+  }
+
+  const generateId = () => {
+    return Math.ceil(1000000*Math.random())
+  }
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  }
+
+  persons = persons.concat(person)
+
+  res.json(person)
+})
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
