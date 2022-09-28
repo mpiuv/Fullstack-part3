@@ -59,14 +59,20 @@ app.use(express.json())
 app.post('/api/persons', (req, res) => {
   const body = req.body
   if (!body.name) {
-    return response.status(400).json({ 
+    return res.status(400).json({ 
       error: 'name missing' 
     })
   }
 
   if (!body.number) {
-    return response.status(400).json({ 
+    return res.status(400).json({ 
       error: 'number missing' 
+    })
+  }
+
+  if (persons.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
+    return res.status(400).json({ 
+      error: 'name must be unique' 
     })
   }
 
