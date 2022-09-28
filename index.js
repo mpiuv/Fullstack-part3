@@ -36,9 +36,9 @@ app.get('/info', (req, res) => {
     let date= new Date()
     let count=persons.map(n => n.id).length
     res.send('<p>Phonebook has info for '+count+' people</p><p>'+date+'</p>')
-  })
+})
 
-  app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res) => {
     const id = Number(req.params.id)
     const person = persons.find(person => person.id === id)
     if (person) {
@@ -46,8 +46,13 @@ app.get('/info', (req, res) => {
     } else {
         res.status(404).end()
     }
-  })
-  
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    persons = persons.filter(person => person.id !== id)
+    res.status(204).end()
+})
 
 const PORT = 3001
 app.listen(PORT, () => {
