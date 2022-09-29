@@ -1,5 +1,8 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
+var morgan = require('morgan')
+app.use(morgan('tiny'))
 
 let persons = [
     {
@@ -54,7 +57,6 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(204).end()
 })
 
-app.use(express.json())
 
 app.post('/api/persons', (req, res) => {
   const body = req.body
@@ -90,6 +92,7 @@ app.post('/api/persons', (req, res) => {
 
   res.json(person)
 })
+
 
 const PORT = 3001
 app.listen(PORT, () => {
