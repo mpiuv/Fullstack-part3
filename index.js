@@ -43,18 +43,26 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/info', (req, res) => {
     let date= new Date()
-    let count=persons.map(n => n.id).length
-    res.send('<p>Phonebook has info for '+count+' people</p><p>'+date+'</p>')
+    let count=Person.find({}).then (persons =>
+      {let count=persons.map(n => n.id).length
+        res.send('<p>Phonebook has info for '+count+' people</p><p>'+date+'</p>')
+      })
 })
+    
 
 app.get('/api/persons/:id', (req, res, next) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
+  Person.findById(req.params.id)
+  .then(person => {
     if (person) {
       res.json(person)
     } else {
-        res.status(404).end()
+      res.status(404).end()
     }
+  })
+  .catch(error => {
+    console.log(error)
+    res.status(400).send({ error: 'malformatted id' })
+  })
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
