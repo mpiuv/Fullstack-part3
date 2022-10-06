@@ -2,13 +2,15 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+app.use(express.static('build'))
 app.use(cors())
 app.use(express.json())
-app.use(express.static('build'))
+//app.use(requestLogger)
 var morgan = require('morgan')
 morgan.token('post',(req,res) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :post'))
 const Person = require('./models/person')
+
 
 let persons = [
     {
@@ -45,7 +47,7 @@ app.get('/info', (req, res) => {
     res.send('<p>Phonebook has info for '+count+' people</p><p>'+date+'</p>')
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
     const id = Number(req.params.id)
     const person = persons.find(person => person.id === id)
     if (person) {
@@ -99,6 +101,26 @@ app.post('/api/persons', (req, res) => {
 
   res.json(person)
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// olemattomien osoitteiden käsittely
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+// tämä tulee kaikkien muiden middlewarejen rekisteröinnin jälkeen!
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT
