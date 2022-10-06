@@ -76,23 +76,25 @@ app.post('/api/persons', (req, res) => {
     })
   }
 
-  if (persons.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
-    return res.status(400).json({ 
-      error: 'name must be unique' 
-    })
-  }
+ // if (Person.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
+ //   return res.status(400).json({ 
+ //     error: 'name must be unique' 
+ //   })
+ // }
 
   const generateId = () => {
     return Math.ceil(1000000*Math.random())
   }
 
-  const person = {
+  const person = new Person({
     name: body.name,
-    number: body.number,
-    id: generateId(),
-  }
+    number: body.number
+  })
 
-  persons = persons.concat(person)
+  person.save().then(result => {
+    console.log('person saved!')
+    mongoose.connection.close()
+  })
 
   res.json(person)
 })
