@@ -82,7 +82,7 @@ app.post('/api/persons', (req, res) => {
 
  // if (Person.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
  //   return res.status(400).json({ 
- //     error: 'name must be unique' 
+ //      error: 'name must be unique' 
  //   })
  // }
 
