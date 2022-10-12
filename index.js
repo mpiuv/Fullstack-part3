@@ -20,86 +20,85 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-    let date= new Date()
-    let count=Person.find({}).then (persons =>
-      {let count=persons.map(n => n.id).length
-        res.send('<p>Phonebook has info for '+count+' people</p><p>'+date+'</p>')
-      })
+  let date= new Date()
+  let count=Person.find({}).then (persons =>
+  {let count=persons.map(n => n.id).length
+    res.send('<p>Phonebook has info for '+count+' people</p><p>'+date+'</p>')
+  })
 })
-    
 
 app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id)
-  .then(person => {
-    if (person) {
-      res.json(person)
-    } else {
-      res.status(404).end()
-    }
-  })
-  .catch(error => {
-    console.log(error)
-    res.status(400).send({ error: 'malformatted id' })
-  })
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(400).send({ error: 'malformatted id' })
+    })
 })
 
 app.delete('/api/persons/:id', (req, response, next) => {
   Person.findByIdAndRemove(req.params.id)
-  .then(res => {
-    response.status(204).end()
-  })
-  .catch(error => next(error))
+    .then(res => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 
 app.post('/api/persons', (req, res, next) => {
   const body = req.body
   if (!body.name) {
-    return res.status(400).json({ 
-      error: 'name missing' 
+    return res.status(400).json({
+      error: 'name missing'
     })
   }
 
   if (!body.number) {
-    return res.status(400).json({ 
-      error: 'number missing' 
+    return res.status(400).json({
+      error: 'number missing'
     })
   }
 
-// if (Person.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
-//   return res.status(400).json({ 
-//      error: 'name must be unique' 
-//   })
-// }
-   let name=body.name
-   let number=body.number
-   if(body.id)
+  // if (Person.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
+  //   return res.status(400).json({
+  //      error: 'name must be unique'
+  //   })
+  // }
+  let name=body.name
+  let number=body.number
+  if(body.id)
     Person.findByIdAndUpdate(
       req.params.id, 
       { name, number },
       { new: true, runValidators: true, context: 'query' }
     )
-    .then(updatedName => {
-    console.log(res.json(updatedName))
-    res.json(updatedName)
-  })
-  .catch( function (error) {
-    console.log(error)
-    next(error)
+      .then(updatedName => {
+        console.log(res.json(updatedName))
+        res.json(updatedName)
+      })
+      .catch( function (error) {
+        console.log(error)
+        next(error)
+      })
+  else{
+    let  person = new Person({
+      name: body.name,
+      number: body.number
     })
-else{
- let  person = new Person({
-  name: body.name,
-  number: body.number
-  })
-  person.save().
-    then(result => {
-    console.log('added',body.name,'number',body.number,'to phonebook')
-    res.json(result)
-  })      
-  .catch( function (error) {
-    console.log(error)
-    next(error)})
+    person.save().
+      then(result => {
+        console.log('added',body.name,'number',body.number,'to phonebook')
+        res.json(result)
+      })
+      .catch( function (error) {
+        console.log(error)
+        next(error)})
   }
 }
 )
