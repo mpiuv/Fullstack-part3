@@ -45,7 +45,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id)
-  .then(result => {
+  .then(res => {
     res.status(204).end()
   })
   .catch(error => next(error))
@@ -66,22 +66,39 @@ app.post('/api/persons', (req, res, next) => {
     })
   }
 
- // if (Person.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
- //   return res.status(400).json({ 
- //      error: 'name must be unique' 
- //   })
- // }
+// if (Person.find(element => element.name.toLowerCase()===body.name.toLowerCase())){
+//   return res.status(400).json({ 
+//      error: 'name must be unique' 
+//   })
+// }
    let name=body.name
    let number=body.number
-   Person.findByIdAndUpdate(
-   req.params.id, 
-  { name, number },
-  { new: true, runValidators: true, context: 'query' }
-) 
-  .then(updatedName => {
+   if(body.id)
+    Person.findByIdAndUpdate(
+      req.params.id, 
+      { name, number },
+      { new: true, runValidators: true, context: 'query' }
+    )
+    .then(updatedName => {
+    console.log(res.json(updatedName))
     res.json(updatedName)
   })
-  .catch(error => next(error))
+  .catch( function (error) {
+    console.log(error)
+    return next(error)})
+else{
+ let  person = new Person({
+  name: body.name,
+  number: body.number
+})
+person.save().then(result => {
+  console.log('added',body.name,'number',body.number,'to phonebook')
+  res.json(result)
+})      
+.catch( function (error) {
+  console.log(error)
+  return next(error)})
+}
 })
 
 const unknownEndpoint = (request, response) => {
